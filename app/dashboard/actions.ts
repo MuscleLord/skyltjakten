@@ -8,7 +8,7 @@ import {
   FIRST_TARGET,
   LAST_TARGET,
   formatTargetNumber,
-} from "@/lib/skyltjakten/number-challange";
+} from "@/lib/skyltjakten/number-challenge";
 
 const SYSTEM_GROUP_ID = process.env.SKYLTJAKTEN_SYSTEM_GROUP_ID!;
 const DEFAULT_CHALLENGE_ID = process.env.SKYLTJAKTEN_DEFAULT_CHALLENGE_ID!;

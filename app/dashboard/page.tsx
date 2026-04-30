@@ -6,7 +6,7 @@ import {
   LAST_TARGET,
   formatTargetNumber,
   isChallengeCompleted,
-} from "@/lib/skyltjakten/number-challange";
+} from "@/lib/skyltjakten/number-challenge";
 import {
   markCurrentTargetFound,
   startNumberChallenge,
