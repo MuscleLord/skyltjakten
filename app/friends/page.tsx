@@ -120,7 +120,7 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
   );
 
   return (
-    <main className="mx-auto min-h-screen max-w-4xl px-4 py-10">
+    <main className="mx-auto min-h-screen max-w-3xl px-6 py-10 text-slate-50">
       <header className="flex items-center justify-between border-b border-zinc-600 pb-4">
         <div>
           <h1 className="text-2xl font-semibold">Vänner</h1>
@@ -149,7 +149,7 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
         </div>
       )}
 
-      <section className="mt-6 rounded-3xl border border-sky-400/20 bg-[#0e1b38]/90 p-6 shadow-xl shadow-blue-950/30">
+      <section className="mt-6 rounded-3xl border border-sky-400/20 bg-[#0e1b38]/90 p-5 shadow-xl shadow-blue-950/30">
         <h2 className="text-lg font-semibold">Lägg till vän</h2>
 
         <form className="mt-4 flex gap-3">
@@ -158,7 +158,7 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
             type="text"
             placeholder="användarnamn"
             required
-            className="min-w-0 flex-1 rounded-lg border-2 border-zinc-700 bg-zinc-300 px-3 py-2 text-zinc-800 outline-none focus:border-amber-400"
+            className="min-w-0 flex-1 rounded-lg border-2 border-zinc-700 bg-zinc-300 px-2 py-2 text-zinc-800 outline-none focus:border-amber-400"
           />
 
           <button
