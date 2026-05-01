@@ -23,6 +23,7 @@ type ProgressLineChartProps = {
 };
 
 export function ProgressLineChart({ data }: ProgressLineChartProps) {
+ 
   if (data.length === 0) {
     return (
       <div className="flex h-64 items-center justify-center rounded-xl border border-dashed border-zinc-800 text-sm text-zinc-500">
@@ -30,16 +31,16 @@ export function ProgressLineChart({ data }: ProgressLineChartProps) {
       </div>
     );
   }
-
+  //let chartDomain = 
   return (
-    <div className="h-72 w-full m-auto min-w-0">
+    <div className="h-full w-full m-auto min-w-0">
       
         <LineChart
           data={data}
-          style={{ width:'100%', aspectRatio: 1.618, maxWidth: 600, }}
+          style={{ width:'100%', height:'100%',  maxWidth: 600, }}
           margin={{
             top: 12,
-            right: 16,
+            right: 8,
             bottom: 16,
             left: -10,
           }}
@@ -51,16 +52,17 @@ export function ProgressLineChart({ data }: ProgressLineChartProps) {
             tickMargin={8}
             minTickGap={24}
           />
-          <YAxis
-          scale={'auto'}
+          <YAxis          
             allowDecimals={false}
-            
+            domain={[0, data.length < 999 ? Math.round(data.length*1.8) : 999]}
             tickMargin={8}
           />
           <Tooltip
             contentStyle={{ 
               backgroundColor: "#0e1b38",
-              borderColor: "#13456f"
+              borderColor: "#13456f",
+              width: "80%",
+              textWrap: "auto"
             }}            
             formatter={(value) => [`${value} / 999`, "Progress"]}
             labelFormatter={(_, payload) => {

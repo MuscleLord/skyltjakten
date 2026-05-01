@@ -62,7 +62,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="sv">
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col select-none touch-pan-y">{children}</body>
     </html>
   );
 }
