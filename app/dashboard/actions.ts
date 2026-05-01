@@ -91,10 +91,10 @@ export async function markCurrentTargetFound() {
 
   const now = new Date();
 
-  const secondsSincePrevious = previousSighting?.found_at
-    ? Math.floor(
-        (now.getTime() - new Date(previousSighting.found_at).getTime()) / 1000
-      )
+    const previousTime = previousSighting?.found_at ?? progress.started_at;
+
+    const secondsSincePrevious = previousTime
+    ? Math.floor((now.getTime() - new Date(previousTime).getTime()) / 1000)
     : null;
 
   const { error: insertError } = await admin.from("sightings").insert({
