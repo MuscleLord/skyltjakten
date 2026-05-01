@@ -11,6 +11,7 @@ import {
 } from "recharts";
 
 export type ProgressChartPoint = {
+  index: number;
   label: string;
   progress: number;
   target: string;
@@ -31,29 +32,36 @@ export function ProgressLineChart({ data }: ProgressLineChartProps) {
   }
 
   return (
-    <div className="h-72 w-full min-h-1 min-w-1">
-      <ResponsiveContainer width="100%" height={288} minWidth={1} minHeight={1}>
+    <div className="h-72 w-full m-auto min-w-0">
+      
         <LineChart
           data={data}
+          style={{ width:'100%', aspectRatio: 1.618, maxWidth: 600, }}
           margin={{
             top: 12,
             right: 16,
-            bottom: 8,
-            left: 0,
+            bottom: 16,
+            left: -10,
           }}
+          responsive
         >
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid strokeDasharray="5 5" stroke="#24598e"/>
           <XAxis
             dataKey="label"
             tickMargin={8}
             minTickGap={24}
           />
           <YAxis
+          scale={'auto'}
             allowDecimals={false}
-            domain={[0, 999]}
+            
             tickMargin={8}
           />
           <Tooltip
+            contentStyle={{ 
+              backgroundColor: "#0e1b38",
+              borderColor: "#13456f"
+            }}            
             formatter={(value) => [`${value} / 999`, "Progress"]}
             labelFormatter={(_, payload) => {
               const point = payload?.[0]?.payload as
@@ -62,18 +70,28 @@ export function ProgressLineChart({ data }: ProgressLineChartProps) {
 
               if (!point) return "";
 
-              return `Nummer ${point.target} • ${point.foundAt}`;
+               return `Fynd ${point.label} • Nummer ${point.target} • ${point.foundAt}`;
             }}
           />
           <Line
             type="monotone"
             dataKey="progress"
-            strokeWidth={2}
-            dot={false}
+            strokeWidth={3}
+            stroke= "#d1972c"
+            dot={{ r: 3 }}
             activeDot={{ r: 5 }}
+            isAnimationActive={false}
           />
         </LineChart>
-      </ResponsiveContainer>
+     
     </div>
   );
 }
+/**
+ margin={{
+            top: 12,
+            right: 16,
+            bottom: 8,
+            left: 0,
+          }} 
+ **/

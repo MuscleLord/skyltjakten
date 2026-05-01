@@ -13,6 +13,12 @@ import {
 const SYSTEM_GROUP_ID = process.env.SKYLTJAKTEN_SYSTEM_GROUP_ID!;
 const DEFAULT_CHALLENGE_ID = process.env.SKYLTJAKTEN_DEFAULT_CHALLENGE_ID!;
 
+
+function redirectWithStatus(type: "message" | "error", code: string): never {
+  redirect(`/dashboard?${type}=${encodeURIComponent(code)}`);
+}
+
+
 async function getCurrentUserId(): Promise<string> {
   const supabase = await createClient();
 
@@ -44,10 +50,12 @@ export async function startNumberChallenge() {
   );
 
   if (error) {
-    throw new Error("Kunde inte starta utmaningen.");
+    //throw new Error("Kunde inte starta utmaningen.");
+    redirectWithStatus("error", "challenge_start_failed");
   }
 
   revalidatePath("/dashboard");
+  redirectWithStatus("message", "challenge_started");
 }
 
 export async function markCurrentTargetFound() {
@@ -62,15 +70,18 @@ export async function markCurrentTargetFound() {
     .maybeSingle();
 
   if (progressError) {
-    throw new Error("Kunde inte läsa progression.");
+    //throw new Error("Kunde inte läsa progression.");
+    redirectWithStatus("error", "progress_read_failed");
   }
 
   if (!progress) {
-    throw new Error("Utmaningen är inte startad.");
+    //throw new Error("Utmaningen är inte startad.");
+    redirectWithStatus("error", "challenge_not_started");
   }
 
   if (progress.completed_at || progress.current_step_index > LAST_TARGET) {
-    throw new Error("Utmaningen är redan färdig.");
+    //throw new Error("Utmaningen är redan färdig.");
+    redirectWithStatus("error", "challenge_already_completed");
   }
 
   const currentStep = progress.current_step_index;
@@ -111,10 +122,12 @@ export async function markCurrentTargetFound() {
 
   if (insertError) {
     if (insertError.code === "23505") {
-      throw new Error("Detta steg är redan registrerat.");
+      //throw new Error("Detta steg är redan registrerat.");
+      redirectWithStatus("error", "target_already_registered");
     }
 
-    throw new Error("Kunde inte spara fyndet.");
+    //throw new Error("Kunde inte spara fyndet.");
+    redirectWithStatus("error", "target_register_failed");
   }
 
   const nextStep = currentStep + 1;
@@ -131,8 +144,10 @@ export async function markCurrentTargetFound() {
     .eq("current_step_index", currentStep);
 
   if (updateError) {
-    throw new Error("Kunde inte uppdatera progression.");
+    //throw new Error("Kunde inte uppdatera progression.");
+    redirectWithStatus("error", "progress_update_failed");
   }
 
   revalidatePath("/dashboard");
+  redirectWithStatus("message", "target_registered");
 }

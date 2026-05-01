@@ -5,6 +5,12 @@ import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
+
+function redirectWithMessage(type: "message" | "error", code: string): never {
+  redirect(`/friends?${type}=${encodeURIComponent(code)}`);
+}
+
+
 async function getCurrentUserId(): Promise<string> {
   const supabase = await createClient();
 
@@ -26,7 +32,8 @@ export async function sendFriendRequest(formData: FormData) {
   const username = normalizeUsername(String(formData.get("username") ?? ""));
 
   if (!username) {
-    redirect("/friends?error=Ange ett användarnamn.");
+    //redirect("/friends?error=Ange ett användarnamn.");
+    redirectWithMessage("error", "missing_username");
   }
 
   const admin = createAdminClient();
@@ -38,15 +45,18 @@ export async function sendFriendRequest(formData: FormData) {
     .maybeSingle();
 
   if (profileError) {
-    redirect("/friends?error=Kunde inte söka användare.");
+    //redirect("/friends?error=Kunde inte söka användare.");
+    redirectWithMessage("error", "user_search_failed");
   }
 
   if (!targetProfile) {
-    redirect("/friends?error=Ingen användare hittades.");
+    //redirect("/friends?error=Ingen användare hittades.");
+    redirectWithMessage("error", "user_not_found");
   }
 
   if (targetProfile.id === currentUserId) {
-    redirect("/friends?error=Du kan inte lägga till dig själv.");
+    //redirect("/friends?error=Du kan inte lägga till dig själv.");
+    redirectWithMessage("error", "cannot_add_self");
   }
 
   const { data: existingA } = await admin
@@ -66,11 +76,13 @@ export async function sendFriendRequest(formData: FormData) {
   const existing = existingA ?? existingB;
 
   if (existing?.status === "accepted") {
-    redirect("/friends?error=Ni är redan vänner.");
+    //redirect("/friends?error=Ni är redan vänner.");
+    redirectWithMessage("error", "already_friends");
   }
 
   if (existing?.status === "pending") {
-    redirect("/friends?error=Det finns redan en aktiv vänförfrågan.");
+    //redirect("/friends?error=Det finns redan en aktiv vänförfrågan.");
+    redirectWithMessage("error", "pending_request_exists");
   }
 
   if (existing?.status === "declined") {
@@ -85,11 +97,13 @@ export async function sendFriendRequest(formData: FormData) {
       .eq("id", existing.id);
 
     if (updateError) {
-      redirect("/friends?error=Kunde inte skicka vänförfrågan.");
+      //redirect("/friends?error=Kunde inte skicka vänförfrågan.");
+      redirectWithMessage("error", "send_failed");
     }
 
     revalidatePath("/friends");
-    redirect("/friends?message=Vänförfrågan skickad.");
+    //redirect("/friends?message=Vänförfrågan skickad.");
+    redirectWithMessage("message", "friend_request_sent");
   }
 
   const { error: insertError } = await admin.from("friendships").insert({
@@ -99,11 +113,15 @@ export async function sendFriendRequest(formData: FormData) {
   });
 
   if (insertError) {
-    redirect("/friends?error=Kunde inte skicka vänförfrågan.");
+    //redirect("/friends?error=Kunde inte skicka vänförfrågan.");
+    redirectWithMessage("error", "send_failed");
+
   }
 
   revalidatePath("/friends");
-  redirect("/friends?message=Vänförfrågan skickad.");
+  //redirect("/friends?message=Vänförfrågan skickad.");
+  redirectWithMessage("message", "friend_request_sent");
+
 }
 
 export async function acceptFriendRequest(formData: FormData) {
@@ -111,7 +129,8 @@ export async function acceptFriendRequest(formData: FormData) {
   const friendshipId = String(formData.get("friendshipId") ?? "");
 
   if (!friendshipId) {
-    redirect("/friends?error=Saknar vänförfrågan.");
+    //redirect("/friends?error=Saknar vänförfrågan.");
+    redirectWithMessage("error", "missing_friend_request");
   }
 
   const admin = createAdminClient();
@@ -127,11 +146,13 @@ export async function acceptFriendRequest(formData: FormData) {
     .eq("status", "pending");
 
   if (error) {
-    redirect("/friends?error=Kunde inte acceptera vänförfrågan.");
+    //redirect("/friends?error=Kunde inte acceptera vänförfrågan.");
+    redirectWithMessage("error", "accept_failed");
   }
 
   revalidatePath("/friends");
-  redirect("/friends?message=Vänförfrågan accepterad.");
+  //redirect("/friends?message=Vänförfrågan accepterad.");
+  redirectWithMessage("message", "friend_request_accepted");
 }
 
 export async function declineFriendRequest(formData: FormData) {
@@ -139,7 +160,8 @@ export async function declineFriendRequest(formData: FormData) {
   const friendshipId = String(formData.get("friendshipId") ?? "");
 
   if (!friendshipId) {
-    redirect("/friends?error=Saknar vänförfrågan.");
+    //redirect("/friends?error=Saknar vänförfrågan.");
+    redirectWithMessage("error", "missing_friend_request");
   }
 
   const admin = createAdminClient();
@@ -155,11 +177,15 @@ export async function declineFriendRequest(formData: FormData) {
     .eq("status", "pending");
 
   if (error) {
-    redirect("/friends?error=Kunde inte neka vänförfrågan.");
+    //redirect("/friends?error=Kunde inte neka vänförfrågan.");
+    redirectWithMessage("error", "decline_failed");
+
   }
 
   revalidatePath("/friends");
-  redirect("/friends?message=Vänförfrågan nekad.");
+  //redirect("/friends?message=Vänförfrågan nekad.");
+  redirectWithMessage("message", "friend_request_declined");
+
 }
 
 export async function removeFriend(formData: FormData) {
@@ -167,7 +193,9 @@ export async function removeFriend(formData: FormData) {
   const friendshipId = String(formData.get("friendshipId") ?? "");
 
   if (!friendshipId) {
-    redirect("/friends?error=Saknar vänskap.");
+    //redirect("/friends?error=Saknar vänskap.");
+    redirectWithMessage("error", "missing_friendship");
+
   }
 
   const admin = createAdminClient();
@@ -179,9 +207,13 @@ export async function removeFriend(formData: FormData) {
     .or(`requester_id.eq.${currentUserId},addressee_id.eq.${currentUserId}`);
 
   if (error) {
-    redirect("/friends?error=Kunde inte ta bort vän.");
+    //redirect("/friends?error=Kunde inte ta bort vän.");
+    redirectWithMessage("error", "remove_failed");
+
   }
 
   revalidatePath("/friends");
-  redirect("/friends?message=Vän borttagen.");
+  //redirect("/friends?message=Vän borttagen.");
+  redirectWithMessage("message", "friend_removed");
+
 }

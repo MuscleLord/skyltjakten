@@ -9,8 +9,34 @@ import {
   removeFriend,
   sendFriendRequest,
 } from "@/app/friends/actions";
-
+import { ConfirmActionButton } from "@/components/confirm-action-button";
 const DEFAULT_CHALLENGE_ID = process.env.SKYLTJAKTEN_DEFAULT_CHALLENGE_ID!;
+
+
+const friendMessages: Record<string, string> = {
+  friend_request_sent: "Vänförfrågan skickad.",
+  friend_request_accepted: "Vänförfrågan accepterad.",
+  friend_request_declined: "Vänförfrågan nekad.",
+  friend_removed: "Vän borttagen.",
+};
+
+const friendErrors: Record<string, string> = {
+  missing_username: "Ange ett användarnamn.",
+  user_search_failed: "Kunde inte söka användare.",
+  user_not_found: "Ingen användare hittades.",
+  cannot_add_self: "Du kan inte lägga till dig själv.",
+  already_friends: "Ni är redan vänner.",
+  pending_request_exists: "Det finns redan en aktiv vänförfrågan.",
+  send_failed: "Kunde inte skicka vänförfrågan.",
+  missing_friend_request: "Saknar vänförfrågan.",
+  accept_failed: "Kunde inte acceptera vänförfrågan.",
+  decline_failed: "Kunde inte neka vänförfrågan.",
+  missing_friendship: "Saknar vänskap.",
+  remove_failed: "Kunde inte ta bort vän.",
+};
+
+
+
 
 type FriendsPageProps = {
   searchParams: Promise<{
@@ -61,6 +87,9 @@ function getFoundCount(progress?: ProgressRow) {
 
 export default async function FriendsPage({ searchParams }: FriendsPageProps) {
   const params = await searchParams;
+
+  const errorText = getQueryText(params.error, friendErrors);
+  const messageText = getQueryText(params.message, friendMessages);
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getClaims();
@@ -119,9 +148,22 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
     (f) => f.status === "pending" && f.requester_id === currentUserId
   );
 
+
+
+
+  function getQueryText(
+    value: string | undefined,
+    map: Record<string, string>
+  ): string | null {
+    if (!value) return null;
+    return map[value] ?? null;
+  }
+
+
+
   return (
     <main className="mx-auto min-h-screen max-w-3xl px-6 py-10 text-slate-50">
-      <header className="flex items-center justify-between border-b border-zinc-600 pb-4">
+      <header className="flex items-center justify-between border-b border-zinc-500 pb-4">
         <div>
           <h1 className="text-2xl font-semibold">Vänner</h1>
           <p className="mt-1 text-sm text-zinc-400">
@@ -137,15 +179,15 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
         </Link>
       </header>
 
-      {params.error && (
+      {errorText && (
         <div className="mt-6 rounded-lg border border-red-800 bg-red-950 px-3 py-2 text-sm text-red-200">
-          {decodeURIComponent(params.error)}
+          {errorText}
         </div>
       )}
 
-      {params.message && (
+      {messageText && (
         <div className="mt-6 rounded-lg border border-emerald-800 bg-emerald-950 px-3 py-2 text-sm text-emerald-200">
-          {decodeURIComponent(params.message)}
+          {messageText}
         </div>
       )}
 
@@ -182,7 +224,7 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
               return (
                 <div
                   key={friendship.id}
-                  className="flex items-center justify-between rounded-xl border border-zinc-800 p-4"
+                  className="flex items-center justify-between rounded-xl border border-sky-800/60 p-4"
                 >
                   <span className="font-medium">
                     {profile?.username ?? "Okänd användare"}
@@ -236,12 +278,12 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
               return (
                 <div
                   key={friendship.id}
-                  className="rounded-xl border border-zinc-800 p-4"
+                  className="flex items-center justify-between rounded-xl border border-sky-800/60 p-4"
                 >
                   <span className="font-medium">
                     {profile?.username ?? "Okänd användare"}
                   </span>
-                  <p className="mt-1 text-sm text-zinc-500">Väntar på svar</p>
+                  <p className="mt-1 text-md text-zinc-300">Väntar på svar</p>
                 </div>
               );
             })}
@@ -283,6 +325,21 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
                     </p>
                   </div>
 
+
+                  <ConfirmActionButton
+                    action={removeFriend}
+                    title="Ta bort vän?"
+                    description={`Vill du ta bort ${profile?.username ?? "den här användaren"} från din vänlista? Ni kommer inte längre se varandras status.`}
+                    confirmLabel="Ja, ta bort"
+                    variant="danger"
+                    hiddenFields={{
+                      friendshipId: friendship.id,
+                    }}
+                    buttonClassName="rounded-lg border border-red-500/50 px-3 py-2 text-sm text-red-200 hover:bg-red-950/40"
+                  >
+                    Ta bort
+                  </ConfirmActionButton>
+                  {/*
                   <form>
                     <input
                       type="hidden"
@@ -295,7 +352,7 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
                     >
                       Ta bort
                     </button>
-                  </form>
+                  </form>*/}
                 </div>
               );
             })}

@@ -19,6 +19,16 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 
+import { ConfirmActionButton } from "@/components/confirm-action-button";
+
+
+type DashboardPageProps = {
+  searchParams: Promise<{
+    error?: string;
+    message?: string;
+  }>;
+};
+
 const DEFAULT_CHALLENGE_ID = process.env.SKYLTJAKTEN_DEFAULT_CHALLENGE_ID!;
 
 /* function formatDuration(seconds: number | null): string {
@@ -32,6 +42,33 @@ const DEFAULT_CHALLENGE_ID = process.env.SKYLTJAKTEN_DEFAULT_CHALLENGE_ID!;
   if (hours > 0) return `${hours} h ${minutes} min`;
   return `${minutes} min`;
 } */
+
+
+const dashboardMessages: Record<string, string> = {
+  challenge_started: "Utmaningen är startad.",
+  target_registered: "Fyndet är registrerat.",
+};
+
+const dashboardErrors: Record<string, string> = {
+  challenge_start_failed: "Kunde inte starta utmaningen.",
+  progress_read_failed: "Kunde inte läsa progression.",
+  challenge_not_started: "Utmaningen är inte startad.",
+  challenge_already_completed: "Utmaningen är redan färdig.",
+  target_already_registered: "Detta steg är redan registrerat.",
+  target_register_failed: "Kunde inte registrera fyndet.",
+  progress_update_failed: "Kunde inte uppdatera progression.",
+};
+
+function getQueryText(
+  value: string | undefined,
+  map: Record<string, string>
+): string | null {
+  if (!value) return null;
+  return map[value] ?? null;
+}
+
+
+
 function formatDuration(seconds: number | null): string {
   if (seconds === null) return "—";
 
@@ -48,8 +85,12 @@ function formatDuration(seconds: number | null): string {
 
   return `${minutes} min`;
 }
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   const supabase = await createClient();
+  const params = await searchParams;
+
+  
+
 
   const { data, error } = await supabase.auth.getClaims();
 
@@ -96,7 +137,7 @@ export default async function DashboardPage() {
   .eq("addressee_id", userId)
   .eq("status", "pending");
 
-
+    
   const { data: progressSightings } = await admin
   .from("sightings")
   .select("step_index, target_pattern, found_at")
@@ -121,20 +162,28 @@ export default async function DashboardPage() {
   );
 
   const progressChartData: ProgressChartPoint[] = (progressSightings ?? []).map(
-  (s) => {
+  (s, index) => {
     const foundAt = new Date(s.found_at);
 
     return {
-      label: foundAt.toLocaleDateString("sv-SE", {
-        month: "short",
-        day: "numeric",
-      }),
+      index: index + 1,
+      label: `#${index + 1}`,
       progress: s.step_index,
       target: s.target_pattern,
       foundAt: foundAt.toLocaleString("sv-SE"),
     };
   }
 );
+
+  const errorText = getQueryText(params.error, dashboardErrors);
+  //const messageText = getQueryText(params.message, dashboardMessages);
+
+
+  let messageText = getQueryText(params.message, dashboardMessages);
+
+  if (params.message === "target_registered" && lastSighting?.target_pattern) {
+    messageText = `${lastSighting.target_pattern} registrerat. Nästa mål är ${currentTarget}.`;
+  }
 
   return (
     <main className="mx-auto min-h-screen max-w-4xl px-6 py-10 text-slate-50">
@@ -178,7 +227,17 @@ export default async function DashboardPage() {
         </form>
         </div>
       </header>
+            {errorText && (
+              <div className="mt-6 rounded-lg border border-red-800 bg-red-950 px-3 py-2 text-sm text-red-200">
+                {errorText}
+              </div>
+            )}
 
+            {messageText && (
+              <div className="mt-6 rounded-lg border border-emerald-800 bg-emerald-950 px-3 py-2 text-sm text-emerald-200">
+                {messageText}
+              </div>
+            )}
       <section className="mt-8 rounded-3xl border border-sky-400/20 bg-[#0e1b38]/90 p-6 shadow-xl shadow-blue-950/30">
         {!hasStarted ? (
           <>
@@ -206,7 +265,7 @@ export default async function DashboardPage() {
           </>
         ) : (
           <>
-            <p className="text-sm uppercase tracking-wide text-zinc-400">
+            <p className="text-lg text-center uppercase tracking-wide text-zinc-300">
               Nuvarande mål att hitta
             </p>
 
@@ -225,7 +284,18 @@ export default async function DashboardPage() {
             </div>
           </div>
         </div>
-
+          <div className="mt-8">
+          <ConfirmActionButton
+                action={markCurrentTargetFound}
+                title={`Registrera ${currentTarget}?`}
+                description={`Bekräfta att du har hittat ett registreringsnummer med ${currentTarget}. Detta sparas med tid och datum och flyttar dig vidare till nästa nummer.`}
+                confirmLabel={`Ja, registrera ${currentTarget}`}
+                buttonClassName="w-full rounded-2xl bg-[#f9d142] px-5 py-4 text-2xl font-bold text-slate-950 shadow-lg shadow-yellow-950/30 hover:bg-[#ffe16a] active:scale-[0.99]"
+            >
+                Hittade {currentTarget}
+            </ConfirmActionButton>
+            </div>
+          {/*
             <form className="mt-8">
               <button
                 formAction={markCurrentTargetFound}
@@ -233,7 +303,7 @@ export default async function DashboardPage() {
               >
                 Hittade {currentTarget}
               </button>
-            </form>
+            </form>*/}
           </>
         )}
       </section>
@@ -266,6 +336,7 @@ export default async function DashboardPage() {
           </p>
         </div>
       </section>
+
       <section className="mt-6 rounded-3xl border border-blue-400/20 bg-blue-950/30 shadow-xl shadow-blue-950/40 backdrop-blur p-5 min-w-1">
         <div className="mb-4">
           <h2 className="text-lg font-semibold">Progress över tid</h2>
