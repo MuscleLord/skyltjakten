@@ -97,7 +97,8 @@ export async function markCurrentTargetFound() {
     .maybeSingle();
 
   if (previousError) {
-    throw new Error("Kunde inte läsa senaste fynd.");
+    //throw new Error("Kunde inte läsa senaste fynd.");
+    redirectWithStatus("error", "previous_sighting_read_failed");
   }
 
   const now = new Date();

@@ -1,3 +1,5 @@
+
+/* #region -> Imports */
 import { redirect } from "next/navigation";
 import { signOut } from "@/app/auth/actions";
 import { createClient } from "@/lib/supabase/server";
@@ -21,7 +23,11 @@ import Image from "next/image";
 
 import { ConfirmActionButton } from "@/components/confirm-action-button";
 
+/* #endregion */
 
+
+
+/* #region -> declared types/variables */
 type DashboardPageProps = {
   searchParams: Promise<{
     error?: string;
@@ -30,19 +36,6 @@ type DashboardPageProps = {
 };
 
 const DEFAULT_CHALLENGE_ID = process.env.SKYLTJAKTEN_DEFAULT_CHALLENGE_ID!;
-
-/* function formatDuration(seconds: number | null): string {
-  if (seconds === null) return "—";
-
-  const days = Math.floor(seconds / 86400);
-  const hours = Math.floor((seconds % 86400) / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-
-  if (days > 0) return `${days} d ${hours} h ${minutes} min`;
-  if (hours > 0) return `${hours} h ${minutes} min`;
-  return `${minutes} min`;
-} */
-
 
 const dashboardMessages: Record<string, string> = {
   challenge_started: "Utmaningen är startad.",
@@ -58,7 +51,9 @@ const dashboardErrors: Record<string, string> = {
   target_register_failed: "Kunde inte registrera fyndet.",
   progress_update_failed: "Kunde inte uppdatera progression.",
 };
+/* #endregion */
 
+/* #region -> Functions */
 function getQueryText(
   value: string | undefined,
   map: Record<string, string>
@@ -66,9 +61,6 @@ function getQueryText(
   if (!value) return null;
   return map[value] ?? null;
 }
-
-
-
 function formatDuration(seconds: number | null): string {
   if (seconds === null) return "—";
 
@@ -85,12 +77,12 @@ function formatDuration(seconds: number | null): string {
 
   return `${minutes} min`;
 }
+/* #endregion */
+
+/* #region -> Component */
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   const supabase = await createClient();
   const params = await searchParams;
-
-  
-
 
   const { data, error } = await supabase.auth.getClaims();
 
@@ -102,6 +94,52 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const email = data.claims.email;
 
   const admin = createAdminClient();
+
+
+  
+  const [
+  profileResult,
+  progressResult,
+  incomingFriendRequestsResult,
+  progressSightingsResult,
+] = await Promise.all([
+  admin
+    .from("profiles")
+    .select("username")
+    .eq("id", userId)
+    .maybeSingle(),
+
+  admin
+    .from("user_progress")
+    .select("current_step_index, started_at, completed_at")
+    .eq("user_id", userId)
+    .eq("challenge_id", DEFAULT_CHALLENGE_ID)
+    .maybeSingle(),
+
+  admin
+    .from("friendships")
+    .select("id", { count: "exact", head: true })
+    .eq("addressee_id", userId)
+    .eq("status", "pending"),
+
+  admin
+    .from("sightings")
+    .select("step_index, target_pattern, found_at, seconds_since_previous")
+    .eq("user_id", userId)
+    .eq("challenge_id", DEFAULT_CHALLENGE_ID)
+    .order("found_at", { ascending: true }),
+]);
+
+const profile = profileResult.data;
+const progress = progressResult.data;
+const incomingFriendRequestCount = incomingFriendRequestsResult.count ?? 0;
+
+const sightings = progressSightingsResult.data ?? [];
+const foundCount = sightings.length;
+const lastSighting = sightings.at(-1) ?? null;
+  
+
+/*
 
   const { data: profile } = await admin
     .from("profiles")
@@ -145,6 +183,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   .eq("challenge_id", DEFAULT_CHALLENGE_ID)
   .order("found_at", { ascending: true });  
 
+  const foundCount = sightingsCount ?? 0;
+  */
+
+
   const hasStarted = Boolean(progress);
   const currentStep = progress?.current_step_index ?? 1;
   const completed = progress
@@ -155,12 +197,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     ? "Klar"
     : formatTargetNumber(currentStep);
 
-  const foundCount = sightingsCount ?? 0;
+
   const progressPercent = Math.min(
     100,
     Math.round((foundCount / LAST_TARGET) * 100)
   );
 
+  /*
   const progressChartData: ProgressChartPoint[] = (progressSightings ?? []).map(
   (s, index) => {
     const foundAt = new Date(s.found_at);
@@ -174,7 +217,19 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     };
   }
 );
+*/
 
+const progressChartData: ProgressChartPoint[] = sightings.map((s, index) => {
+  const foundAt = new Date(s.found_at);
+
+  return {
+    index: index + 1,
+    label: `#${index + 1}`,
+    progress: s.step_index,
+    target: s.target_pattern,
+    foundAt: foundAt.toLocaleString("sv-SE"),
+  };
+});
   const errorText = getQueryText(params.error, dashboardErrors);
   //const messageText = getQueryText(params.message, dashboardMessages);
 
@@ -350,7 +405,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     </main>
   );
 }
-
+/* #endregion */
 
 /*
 export default async function DashboardPage() {

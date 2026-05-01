@@ -10,6 +10,9 @@ import {
   sendFriendRequest,
 } from "@/app/friends/actions";
 import { ConfirmActionButton } from "@/components/confirm-action-button";
+
+
+
 const DEFAULT_CHALLENGE_ID = process.env.SKYLTJAKTEN_DEFAULT_CHALLENGE_ID!;
 
 
@@ -36,7 +39,7 @@ const friendErrors: Record<string, string> = {
 };
 
 
-
+/* #region -> types */
 
 type FriendsPageProps = {
   searchParams: Promise<{
@@ -62,6 +65,17 @@ type ProgressRow = {
   current_step_index: number;
   completed_at: string | null;
 };
+/* #endregion */
+
+/* #region -> functions */
+
+function getQueryText(
+  value: string | undefined,
+  map: Record<string, string>
+): string | null {
+  if (!value) return null;
+  return map[value] ?? null;
+}
 
 function getOtherUserId(friendship: FriendshipRow, currentUserId: string) {
   return friendship.requester_id === currentUserId
@@ -85,6 +99,10 @@ function getFoundCount(progress?: ProgressRow) {
   return Math.min(LAST_TARGET, Math.max(0, progress.current_step_index - 1));
 }
 
+/* #endregion */
+
+
+/* #region -> Component */
 export default async function FriendsPage({ searchParams }: FriendsPageProps) {
   const params = await searchParams;
 
@@ -147,19 +165,6 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
   const outgoing = friendships.filter(
     (f) => f.status === "pending" && f.requester_id === currentUserId
   );
-
-
-
-
-  function getQueryText(
-    value: string | undefined,
-    map: Record<string, string>
-  ): string | null {
-    if (!value) return null;
-    return map[value] ?? null;
-  }
-
-
 
   return (
     <main className="mx-auto min-h-screen max-w-3xl px-6 py-10 text-slate-50">
@@ -362,3 +367,5 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
     </main>
   );
 }
+
+/* #endregion */

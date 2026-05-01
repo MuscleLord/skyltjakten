@@ -4,7 +4,6 @@ import {
   CartesianGrid,
   Line,
   LineChart,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
@@ -31,7 +30,7 @@ export function ProgressLineChart({ data }: ProgressLineChartProps) {
       </div>
     );
   }
-  //let chartDomain = 
+  
   return (
     <div className="h-full w-full m-auto min-w-0">
       
@@ -62,7 +61,8 @@ export function ProgressLineChart({ data }: ProgressLineChartProps) {
               backgroundColor: "#0e1b38",
               borderColor: "#13456f",
               width: "80%",
-              textWrap: "auto"
+              textWrap: "auto",
+              overflowWrap: "normal"
             }}            
             formatter={(value) => [`${value} / 999`, "Progress"]}
             labelFormatter={(_, payload) => {

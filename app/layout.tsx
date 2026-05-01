@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     default: "Skyltjakten",
     template: "%s | Skyltjakten",
   },
-  description: "001–999-utmaning med statistik och social progression.",
+  description: "001-999-utmaning med statistik och social progression.",
   applicationName: "Skyltjakten",
   appleWebApp: {
     capable: true,
@@ -62,7 +62,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="sv">
-      <body className="min-h-full flex flex-col select-none touch-pan-y">{children}</body>
+      <body className="min-h-full flex flex-col select-none scroll-smooth touch-pan-y">{children}</body>
     </html>
   );
 }
