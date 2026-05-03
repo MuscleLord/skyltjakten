@@ -90,7 +90,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
         <Link
           href="/dashboard"
-          className="rounded-xl border border-sky-400/40 bg-sky-950/30 px-4 py-2 text-sm text-sky-100 hover:bg-sky-900/50"
+          className="nav-button"
         >
           Dashboard
         </Link>
@@ -113,7 +113,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           {query && (
             <Link
               href="/admin"
-              className="rounded-xl border border-sky-400/40 bg-sky-950/30 px-4 py-2 text-sm text-sky-100 hover:bg-sky-900/50"
+              className="nav-button"
             >
               Rensa
             </Link>
@@ -169,7 +169,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                       <td className="py-3 pr-4 text-right">
                         <Link
                           href={`/admin/users/${profile.id}`}
-                          className="rounded-xl border border-sky-400/40 bg-sky-950/30 px-3 py-2 text-sm text-sky-100 hover:bg-sky-900/50"
+                          className="nav-button inline-block"
                         >
                           Öppna
                         </Link>

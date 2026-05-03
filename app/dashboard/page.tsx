@@ -261,7 +261,7 @@ const progressChartData: ProgressChartPoint[] = sightings.map((s, index) => {
      
            <Link
             href="/friends"
-            className="relative rounded-xl border border-sky-400/40 bg-sky-950/30 px-4 py-2 text-sm text-sky-100 hover:bg-sky-900/50 hover:scale-[1.05] duration-300 active:bg-sky-400/30 active:scale-[0.97] active:duration-300"
+            className="relative nav-button"
             >
             Vänner
 
@@ -278,7 +278,7 @@ const progressChartData: ProgressChartPoint[] = sightings.map((s, index) => {
           <form>
             <button
               formAction={signOut}
-              className="rounded-xl border border-sky-400/40 bg-sky-950/30 px-4 py-2 text-sm text-sky-100 hover:bg-sky-900/50 hover:scale-[1.05] duration-300 active:bg-sky-400/30 active:scale-[0.97] active:duration-300"
+              className="nav-button"
             >
               Logga ut
             </button>
@@ -357,7 +357,7 @@ const progressChartData: ProgressChartPoint[] = sightings.map((s, index) => {
                 title={`Registrera ${currentTarget}?`}
                 description={`Bekräfta att du har hittat ett registreringsnummer med ${currentTarget}. Detta sparas med tid och datum och flyttar dig vidare till nästa nummer.`}
                 confirmLabel={`Ja, registrera ${currentTarget}`}
-                buttonClassName="w-full rounded-2xl bg-[#f9d142] px-5 py-4 text-2xl font-bold text-slate-950 shadow-lg shadow-yellow-950/30 hover:shadow-yellow-800/30 hover:bg-yellow-300/90 hover:scale-[1.03] duration-300 active:scale-[0.95] active:duration-300 active:bg-yellow-200 ease-linear"
+                buttonClassName="w-full px-5 py-4 text-2xl primary-yellow-button"
             >
                 Hittade {currentTarget}
             </ConfirmActionButton>

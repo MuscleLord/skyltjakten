@@ -25,20 +25,25 @@ export const metadata: Metadata = {
   },
   description: "001-999-utmaning med statistik och social progression.",
   
-  /* openGraph:{
-    images:[
-      {
-        url:"/api/og"
-      }
-    ]
-  }, */
-       
+
   applicationName: "Skyltjakten",
   appleWebApp: {
     capable: true,
     title: "Skyltjakten",
     statusBarStyle: "black-translucent",
+    startupImage: "/splash/iphone-portrait.png",
    
+  },
+  other: {
+    "apple-mobile-web-app-capable": "yes",
+  },
+  openGraph: {
+    title: "Skyltjakten",
+    description:
+      "Ett socialt spel där du jagar registreringsskyltar från 001 till 999.",
+    siteName: "Skyltjakten",
+    locale: "sv_SE",
+    type: "website",
   },
   icons: {
     icon: [

@@ -87,7 +87,7 @@ export default async function AdminUserPage({ params }: AdminUserPageProps) {
 
         <Link
           href="/admin"
-          className="rounded-xl border border-sky-400/40 bg-sky-950/30 px-4 py-2 text-sm text-sky-100 hover:bg-sky-900/50"
+          className="nav-button"
         >
           Tillbaka
         </Link>
@@ -123,7 +123,7 @@ export default async function AdminUserPage({ params }: AdminUserPageProps) {
 
           <Link
             href={`/admin/users/${userId}/import`}
-            className="rounded-2xl bg-[#f9d142] px-4 py-2 text-sm font-black text-slate-950 shadow-lg shadow-yellow-950/30 hover:bg-[#ffe16a]"
+            className="px-4 py-2 text-sm primary-yellow-button"
           >
             Importera/redigera
           </Link>

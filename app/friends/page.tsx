@@ -349,7 +349,7 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
                     hiddenFields={{
                       friendshipId: friendship.id,
                     }}
-                    buttonClassName="rounded-lg border bg-red-950/40 border-red-500/50 px-3 py-2 text-sm text-red-200 hover:bg-red-800/40 hover:scale-[1.05] duration-300 active:bg-red-400/50 active:scale-[0.97] active:duration-300"
+                    buttonClassName="rounded-lg border bg-red-950/40 border-red-500/50 px-3 py-2 text-sm text-red-100 hover:bg-red-800/40 hover:scale-[1.05] duration-300 active:bg-red-400/50 active:scale-[0.97] active:duration-300"
                   >
                     Ta bort
                   </ConfirmActionButton>
