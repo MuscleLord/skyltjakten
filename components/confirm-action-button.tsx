@@ -48,12 +48,12 @@ export function ConfirmActionButton({
   }
 
   const defaultButtonClass =
-    "rounded-xl border border-sky-400/40 bg-sky-950/30 px-4 py-2 text-sm text-sky-100 hover:bg-sky-900/50";
+    "rounded-xl border border-sky-400/40 bg-sky-950/30 px-4 py-2 text-sm text-sky-100 hover:bg-sky-900/50 hover:scale-[1.05] duration-300 active:bg-sky-400/30 active:scale-[0.97] active:duration-300";
 
   const defaultConfirmClass =
     variant === "danger"
       ? "rounded-xl bg-red-500 px-4 py-2 text-sm font-bold text-white hover:bg-red-400 disabled:opacity-60"
-      : "rounded-xl bg-[#f9d142] px-4 py-2 text-sm font-bold text-slate-950 hover:bg-[#ffe16a] disabled:opacity-60";
+      : "rounded-xl bg-[#f9d142] px-4 py-2 text-sm font-bold text-slate-950 hover:bg-[#ffe16a] disabled:opacity-60 hover:scale-[1.05] duration-300 active:bg-yellow-300/80 active:scale-[0.97] active:duration-300";
 
   return (
     <>
@@ -81,7 +81,7 @@ export function ConfirmActionButton({
                 type="button"
                 onClick={() => setOpen(false)}
                 disabled={isPending}
-                className="rounded-xl border border-sky-400/30 px-4 py-2 text-sm text-sky-100 hover:bg-sky-900/40 disabled:opacity-60"
+                className="rounded-xl border border-sky-400/30 px-4 py-2 text-sm text-sky-100 hover:bg-sky-900/40 disabled:opacity-60 hover:scale-[1.05] duration-300 active:bg-sky-400/30 active:scale-[0.97] active:duration-300"
               >
                 {cancelLabel}
               </button>

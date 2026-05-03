@@ -105,7 +105,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 ] = await Promise.all([
   admin
     .from("profiles")
-    .select("username")
+    .select("username, role")
     .eq("id", userId)
     .maybeSingle(),
 
@@ -241,10 +241,10 @@ const progressChartData: ProgressChartPoint[] = sightings.map((s, index) => {
   }
 
   return (
-    <main className="mx-auto min-h-screen max-w-4xl px-6 py-10 text-slate-50">
-      <header className="flex items-center justify-between border-b border-sky-900/60 pb-4">
+    <main className="mx-auto min-h-screen w-sm md:w-xl lg:w-4xl max-w-3xl md:max-w-4xl px-6 py-10 text-slate-50">
+      <header className="flex items-center justify-between w-full border-b border-sky-900/60 pb-4">
         <div>
-          <div className="relative mx-2 mb-1 w-24 h-24 mb:w-32 mb:h-32 sm:w-24 sm:h-24 lg:w-48 lg:h-48">
+          <div className="relative mx-2 mb-1 w-24 h-24 md:w-64 md:h-64">
 
           <Image
             src="/logo.png"
@@ -257,11 +257,12 @@ const progressChartData: ProgressChartPoint[] = sightings.map((s, index) => {
             Inloggad som {profile?.username ?? email}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap justify-end gap-3">
+     
            <Link
             href="/friends"
-            className="relative rounded-xl border border-sky-400/40 bg-sky-950/30 px-4 py-2 text-sm text-sky-100 hover:bg-sky-900/50"
-          >
+            className="relative rounded-xl border border-sky-400/40 bg-sky-950/30 px-4 py-2 text-sm text-sky-100 hover:bg-sky-900/50 hover:scale-[1.05] duration-300 active:bg-sky-400/30 active:scale-[0.97] active:duration-300"
+            >
             Vänner
 
             {(incomingFriendRequestCount ?? 0) > 0 && (
@@ -272,14 +273,25 @@ const progressChartData: ProgressChartPoint[] = sightings.map((s, index) => {
               </span>
             )}
           </Link>
-        <form>
-          <button
-            formAction={signOut}
-            className="rounded-xl border border-sky-400/40 bg-sky-950/30 px-4 py-2 text-sm text-sky-100 hover:bg-sky-900/50"
-          >
-            Logga ut
-          </button>
-        </form>
+       
+
+          <form>
+            <button
+              formAction={signOut}
+              className="rounded-xl border border-sky-400/40 bg-sky-950/30 px-4 py-2 text-sm text-sky-100 hover:bg-sky-900/50 hover:scale-[1.05] duration-300 active:bg-sky-400/30 active:scale-[0.97] active:duration-300"
+            >
+              Logga ut
+            </button>
+          </form>
+            
+            {profile?.role === "admin" && (
+            <Link
+              href="/admin"
+              className="rounded-xl border border-yellow-400/50 bg-yellow-950/30 px-4 py-2 text-sm text-yellow-100 hover:scale-[1.05] hover:bg-yellow-700/30 duration-300 active:bg-yellow-900/50 active:scale-[0.97] active:duration-300"
+            >
+              Admin
+            </Link>
+          )}
         </div>
       </header>
             {errorText && (
@@ -305,7 +317,7 @@ const progressChartData: ProgressChartPoint[] = sightings.map((s, index) => {
             <form className="mt-6">
               <button
                 formAction={startNumberChallenge}
-                className="w-full rounded-2xl bg-[#f9d142] px-5 py-4 text-2xl font-bold text-slate-950 shadow-lg shadow-yellow-950/30 hover:bg-[#ffe16a]"
+                className="w-full rounded-2xl bg-[#f9d142] px-5 py-4 text-2xl font-bold text-slate-950 shadow-lg shadow-yellow-950/30 hover:bg-[#ffe16a] duration-300 active:bg-[#ffd735] active:scale-[0.95] active:duration-300"
               >
                 Starta utmaning
               </button>
@@ -345,7 +357,7 @@ const progressChartData: ProgressChartPoint[] = sightings.map((s, index) => {
                 title={`Registrera ${currentTarget}?`}
                 description={`Bekräfta att du har hittat ett registreringsnummer med ${currentTarget}. Detta sparas med tid och datum och flyttar dig vidare till nästa nummer.`}
                 confirmLabel={`Ja, registrera ${currentTarget}`}
-                buttonClassName="w-full rounded-2xl bg-[#f9d142] px-5 py-4 text-2xl font-bold text-slate-950 shadow-lg shadow-yellow-950/30 hover:bg-[#ffe16a] active:scale-[0.99]"
+                buttonClassName="w-full rounded-2xl bg-[#f9d142] px-5 py-4 text-2xl font-bold text-slate-950 shadow-lg shadow-yellow-950/30 hover:shadow-yellow-800/30 hover:bg-yellow-300/90 hover:scale-[1.03] duration-300 active:scale-[0.95] active:duration-300 active:bg-yellow-200 ease-linear"
             >
                 Hittade {currentTarget}
             </ConfirmActionButton>
@@ -386,7 +398,7 @@ const progressChartData: ProgressChartPoint[] = sightings.map((s, index) => {
 
         <div className="rounded-3xl border border-blue-400/20 bg-blue-950/50 shadow-xl shadow-blue-950/40 backdrop-blur p-5">
           <p className="text-sm text-zinc-400">Tid för senaste steg</p>
-          <p className="mt-2 text-2xl font-semibold">
+          <p className="mt-2 text-2xl font-semibold overflow-clip">
             {formatDuration(lastSighting?.seconds_since_previous ?? null)}
           </p>
         </div>

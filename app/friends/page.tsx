@@ -10,7 +10,7 @@ import {
   sendFriendRequest,
 } from "@/app/friends/actions";
 import { ConfirmActionButton } from "@/components/confirm-action-button";
-
+import Image from "next/image";
 
 
 const DEFAULT_CHALLENGE_ID = process.env.SKYLTJAKTEN_DEFAULT_CHALLENGE_ID!;
@@ -167,21 +167,30 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
   );
 
   return (
-    <main className="mx-auto min-h-screen max-w-3xl px-6 py-10 text-slate-50">
-      <header className="flex items-center justify-between border-b border-zinc-500 pb-4">
-        <div>
+    <main className="mx-auto min-h-screen w-sm md:w-xl lg:w-4xl max-w-3xl md:max-w-4xl px-6 py-10 text-slate-50">
+      <header className="flex items-center h-fit justify-between border-b border-zinc-500 pb-4">
+        <div className="flex flex-col gap-1 w-[50%]">
+          <div className="relative mx-1 mb-1 w-24 h-24 md:w-48 md:h-48">
+          
+            <Image
+              src="/logo.png"
+              alt="Skyltjakten"            
+              fill={true}
+              />
+            </div>
           <h1 className="text-2xl font-semibold">Vänner</h1>
           <p className="mt-1 text-sm text-zinc-400">
             Lägg till vänner och se deras Skyltjakten-status.
           </p>
         </div>
-
-        <Link
-          href="/dashboard"
-          className="relative rounded-xl border border-sky-400/40 bg-sky-950/30 px-4 py-2 text-sm text-sky-100 hover:bg-sky-900/50"
-        >
-          Dashboard
-        </Link>
+        <div className="flex h-full flex-wrap w-[50%] justify-end">
+          <Link
+            href="/dashboard"
+            className="relative rounded-xl h-fit border border-sky-400/40 bg-sky-950/30 px-4 py-2 text-sm text-sky-100 hover:bg-sky-900/50 hover:scale-[1.05] duration-300 active:bg-sky-400/30 active:scale-[0.97] active:duration-300"
+          >
+            Dashboard
+          </Link>
+        </div>
       </header>
 
       {errorText && (
@@ -210,7 +219,7 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
 
           <button
             formAction={sendFriendRequest}
-            className="rounded-2xl bg-[#f9d142] font-black text-slate-950 shadow-lg shadow-yellow-950/30 hover:bg-[#ffe16a] active:scale-[0.99] px-4 py-2 text-sm"
+            className="rounded-2xl bg-[#f9d142] font-black text-slate-950 shadow-lg shadow-yellow-950/30 hover:bg-[#ffe16a] px-4 py-2 text-sm hover:scale-[1.05] duration-300 active:scale-[0.97] active:duration-300"
           >
             Skicka
           </button>
@@ -244,7 +253,7 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
                       />
                       <button
                         formAction={acceptFriendRequest}
-                        className="rounded-lg bg-white px-3 py-2 text-sm text-black"
+                        className="rounded-lg bg-green-600/40 border-green-500/50 border px-3 py-2 text-sm text-black hover:bg-green-500/50 hover:scale-[1.05] duration-300 active:bg-green-400/60 active:scale-[0.97] active:duration-300"
                       >
                         Acceptera
                       </button>
@@ -258,7 +267,7 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
                       />
                       <button
                         formAction={declineFriendRequest}
-                        className="rounded-lg border border-zinc-700 px-3 py-2 text-sm"
+                        className="rounded-lg border bg-red-950/40 border-red-700/50 px-3 py-2 text-sm hover:bg-red-800/40 hover:scale-[1.05] duration-300 active:bg-red-400/40 active:scale-[0.97] active:duration-300"
                       >
                         Neka
                       </button>
@@ -340,7 +349,7 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
                     hiddenFields={{
                       friendshipId: friendship.id,
                     }}
-                    buttonClassName="rounded-lg border border-red-500/50 px-3 py-2 text-sm text-red-200 hover:bg-red-950/40"
+                    buttonClassName="rounded-lg border bg-red-950/40 border-red-500/50 px-3 py-2 text-sm text-red-200 hover:bg-red-800/40 hover:scale-[1.05] duration-300 active:bg-red-400/50 active:scale-[0.97] active:duration-300"
                   >
                     Ta bort
                   </ConfirmActionButton>

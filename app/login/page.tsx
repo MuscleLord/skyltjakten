@@ -20,6 +20,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <Image
           src="/logo.png"
           alt="Skyltjakten"
+          loading="eager"
           className="mx-auto mb-1 h-auto w-auto"
           width={IMG_SIZE}
           height={IMG_SIZE}
