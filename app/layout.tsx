@@ -2,7 +2,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { headers } from "next/headers";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,7 +13,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
 
 
 
@@ -31,7 +30,34 @@ export const metadata: Metadata = {
     capable: true,
     title: "Skyltjakten",
     statusBarStyle: "black-translucent",
-    startupImage: "/splash/iphone-portrait.png",
+    startupImage:
+    [
+      {
+      url: "/splash/splash-1170x2532.png",
+      media:
+        "(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
+    },
+    {
+      url: "/splash/splash-1179x2556.png",
+      media:
+        "(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
+    },
+    {
+      url: "/splash/splash-1290x2796.png",
+      media:
+        "(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
+    },
+    {
+      url: "/splash/splash-1284x2778.png",
+      media:
+        "(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
+    },
+    {
+      url: "/splash/splash-1125x2436.png",
+      media:
+        "(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
+    },
+  ],
    
   },
   other: {
@@ -82,7 +108,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="sv">
-      <body className="min-h-full flex flex-col select-none scroll-smooth touch-pan-y">{children}</body>
+      <body className="min-h-full flex flex-col select-none scroll-smooth touch-pan-y">
+        {children}
+        
+      </body>
+      
     </html>
   );
 }

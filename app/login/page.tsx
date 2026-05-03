@@ -1,6 +1,10 @@
 
 import { signIn, signUp } from "@/app/auth/actions";
+
 import Image from "next/image";
+
+
+
 
 type LoginPageProps = {
   searchParams: Promise<{
@@ -16,6 +20,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-5xl items-center justify-center px-6 py-10">
+      
       <div className="grid w-full gap-6 md:grid-cols-2">
         <Image
           src="/logo.png"
