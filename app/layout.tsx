@@ -66,6 +66,7 @@ export const metadata: Metadata = {
     description:
       "Ett socialt spel där du jagar registreringsskyltar från 001 till 999.",
     siteName: "Skyltjakten",
+    url:"https://skyltjakten.vercel.app",
     locale: "sv_SE",
     type: "website",
   },
