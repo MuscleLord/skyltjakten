@@ -11,6 +11,6 @@ export const config = {
     "/dashboard/:path*",
     "/friends/:path*",
     "/auth/:path*",
-     "/((?!_next/static|_next/image|favicon.ico|opengraph-image.png|twitter-image.png|apple-icon.png|icon.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+     "/((?!_next/static|_next/image|favicon.ico|opengraph-image.png|twitter-image.png|apple-icon.png|icon.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|map)$).*)",
   ],
 };

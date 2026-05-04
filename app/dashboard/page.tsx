@@ -22,6 +22,9 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { ConfirmActionButton } from "@/components/confirm-action-button";
+import { LogoHeader } from "@/components/logo-header";
+import { RegNumberDisplay } from "@/components/regnumber-display";
+import { StatCard } from "@/components/stat-card";
 
 /* #endregion */
 
@@ -94,8 +97,6 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const email = data.claims.email;
 
   const admin = createAdminClient();
-
-
   
   const [
   profileResult,
@@ -139,85 +140,22 @@ const foundCount = sightings.length;
 const lastSighting = sightings.at(-1) ?? null;
   
 
-/*
 
-  const { data: profile } = await admin
-    .from("profiles")
-    .select("username")
-    .eq("id", userId)
-    .maybeSingle();
+const hasStarted = Boolean(progress);
+const currentStep = progress?.current_step_index ?? 1;
+const completed = progress
+  ? isChallengeCompleted(progress.current_step_index)
+  : false;
 
-  const { data: progress } = await admin
-    .from("user_progress")
-    .select("current_step_index, started_at, completed_at")
-    .eq("user_id", userId)
-    .eq("challenge_id", DEFAULT_CHALLENGE_ID)
-    .maybeSingle();
-
-  const { count: sightingsCount } = await admin
-    .from("sightings")
-    .select("id", { count: "exact", head: true })
-    .eq("user_id", userId)
-    .eq("challenge_id", DEFAULT_CHALLENGE_ID);
-
-  const { data: lastSighting } = await admin
-    .from("sightings")
-    .select("target_pattern, found_at, seconds_since_previous")
-    .eq("user_id", userId)
-    .eq("challenge_id", DEFAULT_CHALLENGE_ID)
-    .order("found_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  const { count: incomingFriendRequestCount } = await admin
-  .from("friendships")
-  .select("id", { count: "exact", head: true })
-  .eq("addressee_id", userId)
-  .eq("status", "pending");
-
-    
-  const { data: progressSightings } = await admin
-  .from("sightings")
-  .select("step_index, target_pattern, found_at")
-  .eq("user_id", userId)
-  .eq("challenge_id", DEFAULT_CHALLENGE_ID)
-  .order("found_at", { ascending: true });  
-
-  const foundCount = sightingsCount ?? 0;
-  */
+const currentTarget = completed
+  ? "Klar"
+  : formatTargetNumber(currentStep);
 
 
-  const hasStarted = Boolean(progress);
-  const currentStep = progress?.current_step_index ?? 1;
-  const completed = progress
-    ? isChallengeCompleted(progress.current_step_index)
-    : false;
-
-  const currentTarget = completed
-    ? "Klar"
-    : formatTargetNumber(currentStep);
-
-
-  const progressPercent = Math.min(
-    100,
-    Math.round((foundCount / LAST_TARGET) * 100)
-  );
-
-  /*
-  const progressChartData: ProgressChartPoint[] = (progressSightings ?? []).map(
-  (s, index) => {
-    const foundAt = new Date(s.found_at);
-
-    return {
-      index: index + 1,
-      label: `#${index + 1}`,
-      progress: s.step_index,
-      target: s.target_pattern,
-      foundAt: foundAt.toLocaleString("sv-SE"),
-    };
-  }
+const progressPercent = Math.min(
+  100,
+  Math.round((foundCount / LAST_TARGET) * 100)
 );
-*/
 
 const progressChartData: ProgressChartPoint[] = sightings.map((s, index) => {
   const foundAt = new Date(s.found_at);
@@ -242,21 +180,10 @@ const progressChartData: ProgressChartPoint[] = sightings.map((s, index) => {
 
   return (
     <main className="mx-auto min-h-screen w-sm md:w-xl lg:w-4xl max-w-3xl md:max-w-4xl px-6 py-10 text-slate-50">
-      <header className="flex items-center justify-between w-full border-b border-sky-900/60 pb-4">
-        <div>
-          <div className="relative mx-2 mb-1 w-24 h-24 md:w-64 md:h-64">
-
-          <Image
-            src="/logo.png"
-            alt="Skyltjakten"            
-            fill={true}
-            />
-          </div>
-          
-          <p className="mt-1 text-sm text-zinc-300">
-            Inloggad som {profile?.username ?? email}
-          </p>
-        </div>
+      <header className="flex items-center justify-between w-full border-b border-sky-900/60 pb-4">       
+        
+        <LogoHeader description={`Inloggad som ${profile?.username ?? email}`}/>
+        
         <div className="flex flex-wrap justify-end gap-3">
      
            <Link
@@ -264,7 +191,6 @@ const progressChartData: ProgressChartPoint[] = sightings.map((s, index) => {
             className="relative nav-button"
             >
             Vänner
-
             {(incomingFriendRequestCount ?? 0) > 0 && (
               <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#f9d142] px-1.5 text-xs font-bold text-slate-950 shadow">
                 {(incomingFriendRequestCount ?? 0) > 9
@@ -272,8 +198,7 @@ const progressChartData: ProgressChartPoint[] = sightings.map((s, index) => {
                   : incomingFriendRequestCount}
               </span>
             )}
-          </Link>
-       
+          </Link>       
 
           <form>
             <button
@@ -294,17 +219,17 @@ const progressChartData: ProgressChartPoint[] = sightings.map((s, index) => {
           )}
         </div>
       </header>
-            {errorText && (
-              <div className="mt-6 rounded-lg border border-red-800 bg-red-950 px-3 py-2 text-sm text-red-200">
-                {errorText}
-              </div>
-            )}
+      {errorText && (
+        <div className="mt-6 rounded-lg border border-red-800 bg-red-950 px-3 py-2 text-sm text-red-200">
+          {errorText}
+        </div>
+      )}
 
-            {messageText && (
-              <div className="mt-6 rounded-lg border border-emerald-800 bg-emerald-950 px-3 py-2 text-sm text-emerald-200">
-                {messageText}
-              </div>
-            )}
+      {messageText && (
+        <div className="mt-6 rounded-lg border border-emerald-800 bg-emerald-950 px-3 py-2 text-sm text-emerald-200">
+          {messageText}
+        </div>
+      )}
       <section className="mt-8 rounded-3xl border border-sky-400/20 bg-[#0e1b38]/90 p-6 shadow-xl shadow-blue-950/30">
         {!hasStarted ? (
           <>
@@ -336,21 +261,8 @@ const progressChartData: ProgressChartPoint[] = sightings.map((s, index) => {
               Nuvarande mål att hitta
             </p>
 
-        <div className="mx-auto mt-3 flex w-full max-w-sm overflow-hidden rounded-xl border-4 border-slate-950 bg-white shadow-lg">
-          <div className="flex w-14 shrink-0 flex-col items-center justify-center bg-blue-700 text-white">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-dotted border-yellow-400 text-[10px] font-bold leading-none">
-              EU
-            </span>
+           <RegNumberDisplay region="EU" country="S" currentTarget={currentTarget}/>
 
-            <span className="mt-2 text-2xl font-black leading-none">S</span>
-          </div>
-
-          <div className="flex flex-1 items-center justify-center px-6 py-3">
-            <div className="text-center text-7xl font-black tabular-nums tracking-widest text-slate-950">
-              {currentTarget}
-            </div>
-          </div>
-        </div>
           <div className="mt-8">
           <ConfirmActionButton
                 action={markCurrentTargetFound}
@@ -362,46 +274,17 @@ const progressChartData: ProgressChartPoint[] = sightings.map((s, index) => {
                 Hittade {currentTarget}
             </ConfirmActionButton>
             </div>
-          {/*
-            <form className="mt-8">
-              <button
-                formAction={markCurrentTargetFound}
-                className="w-full rounded-2xl bg-[#f9d142] px-5 py-4 text-2xl font-bold text-slate-950 shadow-lg shadow-yellow-950/30 hover:bg-[#ffe16a]"
-              >
-                Hittade {currentTarget}
-              </button>
-            </form>*/}
+          
           </>
         )}
       </section>
 
       <section className="mt-6 grid gap-4 md:grid-cols-3">
-        <div className="rounded-3xl border border-blue-400/20 bg-blue-950/50 shadow-xl shadow-blue-950/40 backdrop-blur p-5">
-          <p className="text-sm text-zinc-400">Progress</p>
-          <p className="mt-2 text-2xl font-semibold">
-            {foundCount} / {LAST_TARGET}
-          </p>
-          <p className="mt-1 text-sm text-zinc-400">{progressPercent}%</p>
-        </div>
-
-        <div className="rounded-3xl border border-blue-400/20 bg-blue-950/50 shadow-xl shadow-blue-950/40 backdrop-blur p-5">
-          <p className="text-sm text-zinc-400">Senaste fynd</p>
-          <p className="mt-2 text-2xl font-semibold">
-            {lastSighting?.target_pattern ?? "—"}
-          </p>
-          <p className="mt-1 text-sm text-zinc-400">
-            {lastSighting?.found_at
+        <StatCard title="Progress" row1={`${foundCount} / ${LAST_TARGET}`} row2={`${progressPercent}%`}/>
+        <StatCard title="Senaste fynd" row1={lastSighting?.target_pattern ?? "—"} row2={lastSighting?.found_at
               ? new Date(lastSighting.found_at).toLocaleString("sv-SE")
-              : "Inget fynd ännu"}
-          </p>
-        </div>
-
-        <div className="rounded-3xl border border-blue-400/20 bg-blue-950/50 shadow-xl shadow-blue-950/40 backdrop-blur p-5">
-          <p className="text-sm text-zinc-400">Tid för senaste steg</p>
-          <p className="mt-2 text-2xl font-semibold overflow-clip">
-            {formatDuration(lastSighting?.seconds_since_previous ?? null)}
-          </p>
-        </div>
+              : "Inget fynd ännu"}/>
+        <StatCard title="Tid för senaste steg" row1={formatDuration(lastSighting?.seconds_since_previous ?? null)}/> 
       </section>
 
       <section className="mt-6 rounded-3xl border border-blue-400/20 bg-blue-950/30 shadow-xl shadow-blue-950/40 backdrop-blur p-5 min-w-1">
@@ -411,7 +294,6 @@ const progressChartData: ProgressChartPoint[] = sightings.map((s, index) => {
             Visar hur långt du kommit i 001-999-serien.
           </p>
         </div>
-
         <ProgressLineChart data={progressChartData} />
       </section>
     </main>

@@ -230,39 +230,7 @@ export function AdminSightingsImportEditor({
     setCsvText("");
   }*/
 
-  function addCsvRows() {
-    const parsed = parseCsv(csvText);
-
-    if (parsed.length === 0) return;
-
-    if (csvImportMode === "append") {
-        setRows((current) => [...current, ...parsed]);
-        setCsvText("");
-        return;
-    }
-
-    if (csvImportMode === "replaceMatching") {
-        const parsedTargets = new Set(parsed.map((row) => normalizeTarget(row.target)));
-
-        setRows((current) => [
-        ...current.filter((row) => !parsedTargets.has(normalizeTarget(row.target))),
-        ...parsed,
-        ]);
-
-        setCsvText("");
-        return;
-    }
-
-    if (csvImportMode === "replaceAll") {
-        const confirmed = window.confirm(
-            "Detta rensar hela staging-tabellen och ersätter den med CSV-raderna. Fortsätta?"
-        );
-
-        if (!confirmed) return;
-        setRows(parsed);
-        setCsvText("");
-    }
-  }
+  
 
   function applyCsvRows() {
     const parsed = parseCsv(csvText);
